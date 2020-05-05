@@ -1,2 +1,2 @@
 # Multiple_trial_analysis
-Analysis of Beaocon task 
+Analysis of Beacon task 
