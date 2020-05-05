@@ -1,0 +1,11 @@
+# ignore all pictures and pdf files
+*.png
+
+*.pdf
+
+
+# ignore all files in any directory named 
+figures/
+
+
+
