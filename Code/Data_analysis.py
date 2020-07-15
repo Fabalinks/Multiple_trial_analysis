@@ -285,8 +285,15 @@ def Speed_over_days_median(list_of_fs1_days, list_of_fs2_days, list_of_number_of
     plt.savefig(figures + 'speed_over_days_mean_' + Day_number_list[0] + '-' + Day_number_list[-1] + '.png',
                 dpi=1000)
     plt.show()
+def rotation_correction(position_data):
+    """returns corrected data by 5 degrees, should not be ran more then once"""
+    alpha = (5) * np.pi / 180
+    rot_position_data = position_data
+    rot_position_data[1] = position_data[1] * np.cos(alpha) - position_data[3] * np.sin(alpha)
+    rot_position_data[3] = position_data[1] * np.sin(alpha) + position_data[3] * np.cos(alpha)
+    return rot_position_data
 
-def rotation_correction(Day_fs1, Day_fs2, day):
+def rotation_correction_graph(Day_fs1, Day_fs2, day):
     """Plots occupancy in corrected x/y scales"""
     alpha = (5) * np.pi / 180
     Day_fs1x = Day_fs1[1] * np.cos(alpha) - Day_fs1[3] * np.sin(alpha)
@@ -360,3 +367,41 @@ def Total_beacons_over_sessions(list_of_beacon_days, list_of_number_of_days, ani
         figures + 'Total_beacons_over_session_' + animal_ID + '_' + Day_number_list[0] + '-' + Day_number_list[
             -1] + '.png', dpi=1000)
     plt.show()
+
+
+def draw_beacons(Day_fs1, Day_fs2, day, beacon, beacon2):
+    fig, ax = plt.subplots(1, 2)
+    correctionx = -0.18037286
+    correctiony = +0.20697327
+    beaconx = beacon[4] + correctionx
+    beacony = beacon[5] + correctiony
+    ax[0].plot(beaconx, beacony, 'bx', .15, linewidth=4)
+    ax[1].plot(beaconx, beacony, 'bx', .15, linewidth=4)
+
+def get_index (beacon_data, position_data):
+    """get indexes of beacons and compare to positions """
+    enum = list(np.arange(0,len(beacon_data [0]),1))
+    index=[]
+    beacon_times = np.array(beacon_data[0])
+    for i in enum:
+        index.append(int(np.abs(beacon_times[i]-np.array(position_data[0])).argmin() ))
+    return index ,enum
+
+
+def position_before_beacon_trigger_beacon(seconds_back, beacon_data, position_data):
+    """Take beacon data and retuns XY and Time array defined in seconds before beacon """
+    x_list=[]
+    y_list=[]
+    time_list=[]
+    index, enum  = get_index(beacon_data, position_data)
+    for index, (i, e) in enumerate(zip(index, enum)):
+        x_list.append((position_data[1][i-(seconds_back*100):i]))
+        y_list.append((position_data[3][i-(seconds_back*100):i]))
+        time_list.append((position_data[0][i-(seconds_back*100):i]))
+        #print (beacon_data[4][e],beacon_data[5][e],beacon_data[1][e],beacon_data[3][e],position_data[1][i], position_data[2][i] )
+    #make normalized np arrays
+    norm_x = np.asarray(x_list)
+    norm_y = np.asarray(y_list)
+    norm_time = np.asarray(time_list)
+    return norm_x,norm_y,norm_time
+
