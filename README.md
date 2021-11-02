@@ -22,7 +22,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Fabalinks/Multiple_trial_analysis">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="160" height="160">
   </a>
 
 <h3 align="center">Rearing analysis</h3>
@@ -65,7 +65,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Fabalinks/Multiple_trial_analysis">
-    <img src="images/gif.gif" alt="Wireless recording" width="80" height="80">
+    <img src="images/Wireless-movie0001-0249-demo3 (1).gif" alt="Wireless recording" width="80" height="80">
   </a>
 </div>
 
