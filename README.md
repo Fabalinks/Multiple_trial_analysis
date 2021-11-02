@@ -65,7 +65,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Fabalinks/Multiple_trial_analysis">
-    <img src="images/Wireless-movie0001-0249-demo3 (1).gif" alt="Wireless recording" width="80" height="80">
+    <img src="images/Wireless-movie0001-0249-demo3 (1).gif" alt="Wireless recording" width="400" height="400">
   </a>
 </div>
 
