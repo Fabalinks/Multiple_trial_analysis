@@ -8,7 +8,7 @@ import pandas as pd
 ## Crawling all data saved in Data folder
 
 
-def read_data(root_path, tag, has_beacon=True):
+def read_data(root_path, tag, has_beacon=True, has_metadata=True):
     """
     root_path: root directory where data is ex) ../Data/Raw/
     tag: date_time_tag to search for beacon/position data ex) '20211028-0030984'
@@ -18,17 +18,24 @@ def read_data(root_path, tag, has_beacon=True):
 
     beacon_paths = glob.glob(os.path.join(root_path, 'beacon*'))
     position_paths = glob.glob(os.path.join(root_path, 'position*'))
+    meta_paths = glob.glob(os.path.join(root_path, 'meta*'))
     beacon_data = None
     position_data = None
+    metadata = None
     for p in beacon_paths:
         if tag in p:
             beacon_data = pd.read_csv(p, sep=" ", header=None)
     for p in position_paths:
         if tag in p:
             position_data = pd.read_csv(p, sep=" ", header=None)
+    for p in meta_paths:
+        if tag in p:
+            metadata = pd.read_csv(p, sep=":", header=None)
     if has_beacon and beacon_data is None or position_data is None:
         raise ValueError(f'One of beacon or position data is missing in {tag}')
-    return position_data, beacon_data
+    if has_metadata and metadata is None:
+        raise ValueError(f'Metadata is missing in {tag}')
+    return position_data, beacon_data, metadata
 
 
 def multiple_days_data(root_path, tags):
@@ -45,11 +52,22 @@ def multiple_days_data(root_path, tags):
     return beacon_datalist, position_datalist
 
 
-def make_trials(beacon_data, position_data):
-    """
-    Implement a func. to partition full data into trials based on beacon trigger?
-    """
-    return None
+def make_trials(position_data, beacon_data, metadata):
+    trial_list = []
+    trial_beacon = beacon_data[:, -2:]
+    beacon_shown_time_idx = [
+        np.argmin(abs(position_data[:, 0] - i)) for i in beacon_data[:, 0]
+    ]
+    for i in range(len(beacon_shown_time_idx)):
+        if i != len(beacon_shown_time_idx) - 1:
+            trial = position_data[
+                beacon_shown_time_idx[i]:beacon_shown_time_idx[i + 1]]
+        else:
+            trial = position_data[beacon_shown_time_idx[i]:]
+        trial_list.append(trial)
+    before_beacon = position_data[:beacon_shown_time_idx[0]]
+
+    return trial_list, trial_beacon, before_beacon
 
 
 def rotation_correction(position_data):
@@ -68,17 +86,18 @@ def rotation_correction(position_data):
 
 
 class BeaconPosition():
-    def __init__(self, root_path, tag, has_beacon=True):
-        self.position_data, self.beacon_data = read_data(
-            root_path, tag, has_beacon)
+    def __init__(self, root_path, tag, has_beacon=True, has_metadata=True):
+        self.position_data, self.beacon_data, self.metadata = read_data(
+            root_path, tag, has_beacon, has_metadata)
         self.position_data = rotation_correction(self.position_data.to_numpy())
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
-            self.trials_data = make_trials(self.beacon_data,
-                                           self.position_data)
 
         self.get_distance_speed()
         self.statistics = self.get_statistic()
+        if has_beacon:
+            self.trial_list, self.trial_beacon, self.before_beacon = make_trials(
+                self.position_data, self.beacon_data, self.metadata)
 
     def get_statistic(self):
 
@@ -104,19 +123,30 @@ class BeaconPosition():
 
 
 class MultiDaysBeaconPosition():
-    def __init__(self, root_path, tags, has_beacon):
+    def __init__(self, root_paths, tags, has_beacon, has_metadata):
         #self.beacon_list, self.position_list = multiple_days_data(
         #    root_path, tags)
         self.dataset_list = []
-        for tag in tags:
-            self.dataset_list.append(BeaconPosition(root_path, tag,
-                                                    has_beacon))
+        for root_path, tag in zip(root_paths, tags):
+            self.dataset_list.append(
+                BeaconPosition(root_path, tag, has_beacon, has_metadata))
         self.multisession_statistics, self.individual_statistics = self.get_statistics(
         )
+        if has_beacon:
+            self.get_trials()
 
     @property
     def num_sessions(self):
         return len(self.dataset_list)
+
+    def get_trials(self):
+        self.trial_list = []
+        self.beacon_list = []
+        self.before_beacon = []
+        for session in self.dataset_list:
+            self.trial_list.append(session.trial_list)
+            self.beacon_list.append(session.trial_beacon)
+            self.before_beacon.append(session.before_beacon)
 
     def get_statistics(self):
         ## Across session statistics
