@@ -4,8 +4,9 @@ import numpy as np
 import math
 import time
 
-root = 'C:/Users/Fabian/Desktop/Analysis/Multiple_trial_analysis/Data/Raw/'
-figures = 'C:/Users/Fabian/Desktop/Analysis/Multiple_trial_analysis/Figures/'
+real_root= 'C:/Users/Fabian/Desktop/Multiple_trial_analysis/Multiple_trial_analysis/'
+root = real_root + 'Data/Raw/'
+figures = real_root + 'Figures/'
 
 #Data with beacon metadata
 beacon = pd.read_csv(root+'beacons 20200128-151826.txt',sep=" ", header=None)
