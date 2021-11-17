@@ -4,7 +4,8 @@ import numpy as np
 import math
 import time
 
-real_root= 'C:/Users/Fabian/Desktop/Multiple_trial_analysis/Multiple_trial_analysis/'
+real_root= 'C:/Users/Fabian/Desktop/Analysis/Multiple_trial_analysis/'
+#'C:/Users/Fabian/Desktop/Multiple_trial_analysis/Multiple_trial_analysis/'
 root = real_root + 'Data/Raw/'
 figures = real_root + 'Figures/'
 
