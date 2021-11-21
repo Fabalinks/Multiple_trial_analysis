@@ -59,11 +59,12 @@ def straightness_over_time(trial_trajectory, before_time=2):
     time_after = np.cumsum(np.flip(time[1:] - time[:-1]))
     if time_after[-1] > before_time:
         end_ind = np.where(time_after >= before_time)[0][0]
-        trial_trajectory = np.flip(trial_trajectory[:, 1:3, ])[end_ind:]
-    for i in range(len(trial_trajectory) - 1):
-        straight_length = _straight_length(trial_trajectory[i],
-                                           trial_trajectory[-1])
-        trajectory_displacement = travel_distance(trial_trajectory[i:])
+        trial_trajectory = np.flip(trial_trajectory[:, 1:3, ],
+                                   axis=0)[end_ind:]
+    for i in range(len(trial_trajectory) - 2):
+        straight_length = _straight_length(trial_trajectory[i + 1],
+                                           trial_trajectory[0])
+        trajectory_displacement = travel_distance(trial_trajectory[:i + 2])
 
         straightness.append(straight_length / trajectory_displacement)
 
