@@ -70,3 +70,31 @@ def straightness_over_time(trial_trajectory, before_time=2):
 
     return straightness, (trial_trajectory[0],
                           trial_trajectory[-1]), trial_trajectory
+
+
+def bootstrap(trajectory, time_window=2, num_sampling=10, type='sliding'):
+    ##trajectory = [time,x,y,z]
+    ## sample sham trajectory from entire session randomly
+    sham_straightness_list = []
+    shuffle_count = 1
+    while shuffle_count < num_sampling:
+        random_index = np.random.randint(0, len(trajectory))
+        time = trial_trajectory[random_index:, 0]
+        time_cum = np.cumsum(time[1:] - time[:-1])
+        if time_cum[-1] > time_window:
+            end_ind = np.where(time_cum >= time_window)[0][0]
+            shuffle_count += 1
+
+        else:
+            continue
+        sampled_trajectory = trajectory[random_index:end_index + random_index]
+        if type == 'sliding':
+            sham_straightness = straightness_over_time(
+                sampled_trajectory, before_time=time_window)[0]
+
+        elif type == 'fixed':
+            sham_straightness = straightness_moment_time(trial_trajectory)(
+                sampled_trajectory, before_time=time_window)[0]
+
+        sham_straightness_list.append(sham_straightness)
+    return sham_straightness_list
