@@ -67,6 +67,8 @@ def make_trials(position_data, beacon_data, metadata):
     beacon_shown_time_idx = [
         np.argmin(abs(position_data[:, 0] - i)) for i in beacon_data[:, 0]
     ]
+
+    trial_list.append(position_data[:beacon_shown_time_idx[0]])
     for i in range(len(beacon_shown_time_idx)):
         if i != len(beacon_shown_time_idx) - 1:
             trial = position_data[
