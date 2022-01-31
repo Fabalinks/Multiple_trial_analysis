@@ -16,7 +16,7 @@ def read_data(root_path, tag, has_beacon=True, has_metadata=True):
     Returns beacon, position pair data with the given tag in DataFrame 
     """
 
-    beacon_paths = glob.glob(os.path.join(root_path, 'beacon*'))
+    beacon_paths = glob.glob(os.path.join(root_path, 'beacons*'))
     position_paths = glob.glob(os.path.join(root_path, 'position*'))
     meta_paths = glob.glob(os.path.join(root_path, 'meta*'))
     beacon_data = None
