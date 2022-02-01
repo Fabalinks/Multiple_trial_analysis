@@ -97,15 +97,15 @@ def make_trials(position_data, beacon_data, metadata):
 
 def rotation_correction(position_data):
 
-    alpha = (5) * np.pi / 180
+    alpha = (2) * np.pi / 180
 
     rot_position_data = position_data
 
     rot_position_data[:, 1] = position_data[:, 1] * np.cos(
-        alpha) - position_data[:, 3] * np.sin(alpha)
+        alpha) - position_data[:, 2] * np.sin(alpha)
 
-    rot_position_data[:, 3] = position_data[:, 1] * np.sin(
-        alpha) + position_data[:, 3] * np.cos(alpha)
+    rot_position_data[:, 2] = position_data[:, 1] * np.sin(
+        alpha) + position_data[:, 2] * np.cos(alpha)
 
     return rot_position_data
 
@@ -118,11 +118,11 @@ class BeaconPosition():
     def __init__(self, root_path, tag, has_beacon=True, has_metadata=True):
         self.position_data, self.beacon_data, self.metadata = read_data(
             root_path, tag, has_beacon, has_metadata)
-        self.position_data = rotation_correction(
-            self.position_data.to_numpy()[:, :4])
+        self.position_data=rotation_correction(self.position_data.to_numpy()[:, [0,1,3,2]])
+        
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
-
+            self.beacon_data = rotation_correction(self.beacon_data[:, [0,-2,-1]])
         self.get_distance_speed()
         self.statistics = self.get_statistic()
         if has_beacon:
@@ -149,7 +149,7 @@ class BeaconPosition():
                    axis=1))
         self.travel_distance = np.cumsum(self.displacement, axis=0)
         self.time_bin = self.position_data[1:, 0] - self.position_data[:-1, 0]
-        self.speed = (self.displacement / self.time_bin) * 100  #Check unit
+        self.speed = (self.displacement / self.time_bin)  #Check unit
 
 
 class MultiDaysBeaconPosition():
