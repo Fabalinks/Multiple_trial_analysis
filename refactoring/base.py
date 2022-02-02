@@ -7,6 +7,14 @@ import pandas as pd
 
 ## Filtering of speed, position, **sampling rate differs across trials!
 
+##Global variable for adjusting offsets between beacon position and rat position for FS04
+
+x_max, x_min = 0.2, -0.76
+x_offset = x_max - (x_max - x_min)/2
+y_max, y_min = 0.072,  -1.754
+y_offset = y_max - (y_max - y_min)/2
+
+
 
 def read_data(root_path, tag, has_beacon=True, has_metadata=True):
     """
@@ -123,6 +131,8 @@ class BeaconPosition():
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
             self.beacon_data = rotation_correction(self.beacon_data[:, [0,-2,-1]])
+            self.beacon_data[:,1] = self.beacon_data[:,1] + x_offset
+            self.beacon_data[:,2] = self.beacon_data[:,2] - y_offset
         self.get_distance_speed()
         self.statistics = self.get_statistic()
         if has_beacon:
@@ -212,3 +222,59 @@ class MultiDaysBeaconPosition():
         }
 
         return multisession_statistics, individual_statistics
+
+    def get_rearings(self, threshold= 0.65):
+        
+        """
+        Find rearings, which is defined as an event with z position above threshold in each trial
+        Return: counts of rears in each trial, times of rears, x,y position of rears in each trial and session.
+
+        """
+        session_rearing = []
+        session_rearing_counts =[]
+        session_rearing_durations = []
+        session_rearing_distance = []
+        for i, session in enumerate(self.trial_list):
+            trial_rearings = []
+            trial_rearing_counts = []
+            trial_rearing_durations = []
+            trial_distance_beacon =[]
+            for j, trial in enumerate(session[1:]):
+                rearings = trial[:, -1] >= threshold
+                events =np.argwhere(np.diff(rearings))
+                events = events.reshape(len(events)).tolist()
+                trial_rearings.append(trial[rearings])
+                ## get counts of rearing events wihtin a trial 
+                if len(events)!=0 and rearings[0]:
+                    counts = int(len(events)//2) + 1
+                else:
+                    counts = int(len(events)//2) + len(events)%2
+                trial_rearing_counts.append(counts)
+                
+                ## count time for each rear
+                if len(rearings)>0:
+                    if rearings[0] and len(events)%2 ==0:
+                        starts = ([0] + events)[0::2]
+                        ends = (events+[-1])[0::2]
+                    elif rearings[0] and len(events)%2 ==1:
+                        starts = ([0]+ events)[0::2]
+                        ends = events[0::2]
+                    elif (not rearings[0] and len(events)%2 ==0):
+                        starts = events[0::2]
+                        ends = events[1::2]
+                    elif (not rearings[0] and len(events)%2==1):
+                        starts = events[0::2]
+                        ends = (events+ [-1])[1::2]
+                    rearing_duration = [trial[e,0]-trial[s,0] for s, e in zip(starts, ends)]
+                    beacon_pos = self.beacon_list[i][j]
+                    distance_from_beacon = [np.mean(np.linalg.norm(trial[s:e, 1:3] - beacon_pos, axis = 1)) for s,e in zip(starts, ends)]
+                    trial_rearing_durations.append(rearing_duration)
+                    trial_distance_beacon.append(distance_from_beacon)
+                ## measure a distance from beacon while rearing
+
+            session_rearing.append(trial_rearings)
+            session_rearing_counts.append(trial_rearing_counts)
+            session_rearing_durations.append(trial_rearing_durations)
+            session_rearing_distance.append(trial_distance_beacon)
+        
+        return session_rearing, session_rearing_counts, session_rearing_durations, session_rearing_distance
