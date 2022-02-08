@@ -14,7 +14,12 @@ x_offset = x_max - (x_max - x_min)/2
 y_max, y_min = 0.072,  -1.754
 y_offset = y_max - (y_max - y_min)/2
 
+##Global variable for getting relevant arena 
 
+X_cut_min = -.59
+Y_cut_max = 1.61
+X_cut_max = .12
+Y_cut_min = .00
 
 def read_data(root_path, tag, has_beacon=True, has_metadata=True):
     """
@@ -127,12 +132,13 @@ class BeaconPosition():
         self.position_data, self.beacon_data, self.metadata = read_data(
             root_path, tag, has_beacon, has_metadata)
         self.position_data=rotation_correction(self.position_data.to_numpy()[:, [0,1,3,2]])
+        self.position_data[:,1] = self.position_data[:,1] - x_offset
+        self.position_data[:,2] = self.position_data[:,2] + y_offset
         
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
             self.beacon_data = rotation_correction(self.beacon_data[:, [0,-2,-1]])
-            self.beacon_data[:,1] = self.beacon_data[:,1] + x_offset
-            self.beacon_data[:,2] = self.beacon_data[:,2] - y_offset
+
         self.get_distance_speed()
         self.statistics = self.get_statistic()
         if has_beacon:
@@ -234,13 +240,17 @@ class MultiDaysBeaconPosition():
         session_rearing_counts =[]
         session_rearing_durations = []
         session_rearing_distance = []
+
+        def rear_in_arena(data):
+            return (data[:,1]> X_cut_min) & (data[:,1]< X_cut_max) & (data[:,2]>Y_cut_min) & (data[:,2]<Y_cut_max)
+
         for i, session in enumerate(self.trial_list):
             trial_rearings = []
             trial_rearing_counts = []
             trial_rearing_durations = []
             trial_distance_beacon =[]
             for j, trial in enumerate(session[1:]):
-                rearings = trial[:, -1] >= threshold
+                rearings = (trial[:, -1] >= threshold) & (rear_in_arena(trial))
                 events =np.argwhere(np.diff(rearings))
                 events = events.reshape(len(events)).tolist()
                 trial_rearings.append(trial[rearings])
