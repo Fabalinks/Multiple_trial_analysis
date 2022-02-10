@@ -2,10 +2,8 @@ import numpy as np
 
 import base
 
-##TODOs: implement ver.1 straightness function, bootstraping
 
-
-def straightness_moment_time(trial_trajectory, before_time=3):
+def straightness_moment_time(trial_trajectory, time_window=3):
     def _straight_line(start, end, length):
 
         _x = np.linspace(start[0], end[0], length)
@@ -22,10 +20,17 @@ def straightness_moment_time(trial_trajectory, before_time=3):
                                         axis=1)))[-1]
 
     time = trial_trajectory[:, 0]
+
     time_after = np.cumsum(np.flip(time[1:] - time[:-1]))
-    if time_after[-1] > before_time:
-        end_ind = np.where(time_after >= before_time)[0][0]
-        trial_trajectory = np.flip(trial_trajectory[:, 1:3, ])[:end_ind]
+    trajectory_ = np.flip(trial_trajectory[:, 1:3, ],
+                            axis=0)
+
+    if time_window is None:
+        end_ind = -1
+        trial_trajectory = trajectory_[:end_ind]
+    elif time_after[-1] > time_window:
+        end_ind = np.where(time_after >= time_window)[0][0]
+        trial_trajectory = trajectory_[:end_ind]
     else:
         print('Time window exceeds the length of trajectory for this trial')
         return None
@@ -35,11 +40,11 @@ def straightness_moment_time(trial_trajectory, before_time=3):
     trajectory_displacement = travel_distance(trial_trajectory)
     straightness = straight_length / trajectory_displacement
 
-    return straightness, np.array([trial_trajectory[0],
+    return np.flip(straightness), np.array([trial_trajectory[0],
                                    trial_trajectory[-1]]), trial_trajectory
 
 
-def straightness_over_time(trial_trajectory, before_time=2):
+def straightness_over_time(trial_trajectory, time_window=2):
 
     straightness = []
 
@@ -59,15 +64,23 @@ def straightness_over_time(trial_trajectory, before_time=2):
                                         axis=1)))[-1]
 
     time = trial_trajectory[:, 0]
-    time_after = np.cumsum(np.flip(time[1:] - time[:-1]))
 
-    if time_after[-1] > before_time:
-        end_ind = np.where(time_after > before_time)[0][0]
-        trial_trajectory = np.flip(trial_trajectory[:, 1:3, ],
-                                   axis=0)[:end_ind]
+
+    time_after = np.cumsum(np.flip(time[1:] - time[:-1]))
+    trajectory_ = np.flip(trial_trajectory[:, 1:3, ],
+                            axis=0)
+
+    if time_window is None:
+        end_ind = -1
+        trial_trajectory = trajectory_[:end_ind]
+    elif time_after[-1] > time_window:
+        end_ind = np.where(time_after > time_window)[0][0]
+        trial_trajectory = trajectory_[:end_ind]
     else:
         print('Time window exceeds the length of trajectory for this trial')
         return None
+
+
     for i in range(len(trial_trajectory) - 2):
         straight_length = _straight_length(trial_trajectory[i + 1],
                                            trial_trajectory[0])
@@ -75,7 +88,7 @@ def straightness_over_time(trial_trajectory, before_time=2):
 
         straightness.append(straight_length / trajectory_displacement)
 
-    return straightness, (trial_trajectory[0],
+    return np.flip(straightness), (trial_trajectory[0],
                           trial_trajectory[-1]), trial_trajectory
 
 
