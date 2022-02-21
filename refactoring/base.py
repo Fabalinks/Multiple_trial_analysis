@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import argparse
+from this import d
 import numpy as np
 import pandas as pd
 
@@ -64,6 +65,22 @@ def multiple_days_data(root_path, tags):
         position_datalist.appned(position_data)
     return beacon_datalist, position_datalist
 
+def cumulative_angle(data):
+    """
+    Change 'yaw' to cumulative angle changes.
+    """
+    deltas = []
+    data = data+180
+    for n, (before,after) in enumerate(zip(data[:-1], data[1:])):
+        delta = after - before
+        if delta < -180:
+            deltas.append(360 + delta)
+        elif delta > 180:
+            deltas.append(-360 + delta)      
+        else:
+            deltas.append(delta)
+            
+    return np.insert(np.cumsum(deltas), 0,0)
 
 def make_trials(position_data, beacon_data, metadata, frequency = 50):
     '''
@@ -142,6 +159,7 @@ class BeaconPosition():
         self.position_data=rotation_correction(position_data.to_numpy()[:, [0,1,3,2,4,5,6]])
         self.position_data[:,1] = self.position_data[:,1] - x_offset
         self.position_data[:,2] = self.position_data[:,2] + y_offset
+        self.position_data[:,5]=cumulative_angle(self.position_data[:, 5])
         
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
@@ -183,6 +201,7 @@ class BeaconPosition():
 
     def get_head_rotation(self):
         self.angular_displacement = self.position_data[1:, 4:] - self.position_data[:-1, 4:]
+        #self.angular_displacement[:, 1] = cumulative_angle(self.angular_displacement[:, 1])
         self.time_bin = self.position_data[1:, 0] - self.position_data[:-1, 0]
         self.angular_velocity = self.angular_displacement/self.time_bin[:, None]
         
