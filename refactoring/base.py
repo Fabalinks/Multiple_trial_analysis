@@ -112,25 +112,34 @@ def make_trials(position_data, beacon_data, metadata, frequency = 50):
     before_beacon = position_data[:beacon_shown_time_idx[0]]
     visible = []
     ## visible 0, invisible successful 1, invisible fail 2
-    trial_visible = np.zeros(len(trial_list))
-    invisible_time = eval(metadata['invisible_time'].item())
-    invisible_index = eval(metadata['invisible_list'].item())
-    invisible_frequency = eval(metadata['light_off'].item())
-    trial_visible[np.arange(len(trial_list))%invisible_frequency == (invisible_frequency-1)] = 2
-    trial_visible[invisible_index] = 1
-    """
-    for n, trial in enumerate(trial_list):
-        trial_visible_ = np.ones_like(trial)
-        if n in invisible_index:
-            time_after = np.cumsum(trial[1:, 0] - trial[:-1, 0])
-            if time_after[-1] > invisible_time:
-                invisible_end = np.where(time_after >= invisible_time)[0][0]
-                trial_visible_ = trial_visible_[:invisible_end]
-            trial_visible[n] = False
-        visible.append(trial_visible_)
-    """
+    if metadata is None:
+        return trial_list, trial_beacon
 
-    return trial_list, trial_beacon, trial_visible
+    elif 'invisible_time' in metadata.keys():
+        trial_visible = np.zeros(len(trial_list))
+        invisible_time = eval(metadata['invisible_time'].item())
+        invisible_index = eval(metadata['invisible_list'].item())
+        invisible_frequency = eval(metadata['light_off'].item())
+        trial_visible[np.arange(len(trial_list))%invisible_frequency == (invisible_frequency-1)] = 2
+        trial_visible[invisible_index] = 1
+        """
+        for n, trial in enumerate(trial_list):
+            trial_visible_ = np.ones_like(trial)
+            if n in invisible_index:
+                time_after = np.cumsum(trial[1:, 0] - trial[:-1, 0])
+                if time_after[-1] > invisible_time:
+                    invisible_end = np.where(time_after >= invisible_time)[0][0]
+                    trial_visible_ = trial_visible_[:invisible_end]
+                trial_visible[n] = False
+            visible.append(trial_visible_)
+        """
+        return trial_list, trial_beacon, trial_visible
+    else:
+        return trial_list, trial_beacon
+
+   
+
+    
 
 
 def rotation_correction(position_data):
@@ -156,26 +165,37 @@ class BeaconPosition():
     def __init__(self, root_path, tag, has_beacon=True, has_metadata=True):
         position_data, self.beacon_data, self.metadata = read_data(
             root_path, tag, has_beacon, has_metadata)
-        self.position_data=rotation_correction(position_data.to_numpy()[:, [0,1,3,2,4,5,6]])
+        
+        if position_data.shape[1] == 4:
+            """
+            Case for old dataset where angle is not recorded
+            """
+            self.position_data = rotation_correction(position_data.to_numpy()[:, [0,1,3,2]])
+        else:
+            self.position_data=rotation_correction(position_data.to_numpy()[:, [0,1,3,2,4,5,6]])
+            self.position_data[:,5]=cumulative_angle(self.position_data[:, 5])
         self.position_data[:,1] = self.position_data[:,1] - x_offset
         self.position_data[:,2] = self.position_data[:,2] + y_offset
-        self.position_data[:,5]=cumulative_angle(self.position_data[:, 5])
         
+
         if has_beacon:
             self.beacon_data = self.beacon_data.to_numpy()
             self.beacon_data = rotation_correction(self.beacon_data[:, [0,-2,-1]])
+            if not has_metadata:
+                self.trial_list, self.trial_beacon = make_trials(self.position_data, self.beacon_data, None)
+            else:
+                self.trial_list, self.trial_beacon, self.trial_visible = make_trials(
+                    self.position_data, self.beacon_data, self.metadata)
+                self.total_trial = len(self.trial_visible)
+                self.num_invisible_trial = (self.trial_visible != 0).sum()
+                self.num_invisible_successful_trial = (self.trial_visible == 1).sum()
+                self.num_invisible_failed_trial = (self.trial_visible ==2).sum()
+                self.num_visible_trial = (self.trial_visible == 0).sum()
 
         self.get_distance_speed()
         self.get_head_rotation()
         self.statistics = self.get_statistic()
-        if has_beacon:
-            self.trial_list, self.trial_beacon, self.trial_visible = make_trials(
-                self.position_data, self.beacon_data, self.metadata)
-        self.total_trial = len(self.trial_visible)
-        self.num_invisible_trial = (self.trial_visible != 0).sum()
-        self.num_invisible_successful_trial = (self.trial_visible == 1).sum()
-        self.num_invisible_failed_trial = (self.trial_visible ==2).sum()
-        self.num_visible_trial = (self.trial_visible == 0).sum()
+            
 
     def get_statistic(self):
 
@@ -232,9 +252,10 @@ class MultiDaysBeaconPosition():
         #self.visible = []
         for session in self.dataset_list:
             self.trial_list.append(session.trial_list)
-            self.trial_visible.append(session.trial_visible)
             #self.visible.append(session.visible)
             self.beacon_list.append(session.trial_beacon)
+            if hasattr(session,'trial_visible'):
+                self.trial_visible.append(session.trial_visible)
 
     def get_statistics(self):
         ## Across session statistics
