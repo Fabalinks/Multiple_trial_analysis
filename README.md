@@ -114,7 +114,7 @@ beacons datetime.txt:
  | Time     | X rat | Z rat | Y rat | X beacon | Y beacon|
  | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
-metadata datetime.txt :  Example described
+metadata date - time.txt :  Example described
 
 
 
