@@ -101,14 +101,18 @@ In this analysis we focus on proving the rearing behavior at the beacon.
 <!-- Data Description -->
 ## Data description
 
-During an experimental session 3 files are generated.
+During an experimental session 4 files are generated.
 
 position datetime.txt (rotation in quaternion coordinates):
 
 | Time     | X rat | Z rat | Y rat | X rotation_rat | Y rotation_rat| Z rotation_rat | Motive Frame|Motive timestamp|Motive session timestamp|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
+beacons_entry.txt (historical):
 
+ | Time     | X rat | Z rat | Y rat | X beacon | Y beacon| time in beacon|
+ | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+ 
 beacons datetime.txt:
 
  | Time     | X rat | Z rat | Y rat | X beacon | Y beacon|
