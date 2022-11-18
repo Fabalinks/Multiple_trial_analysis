@@ -111,7 +111,7 @@ position datetime.txt (rotation in quaternion coordinates):
 beacons_entry.txt (historical):
 
  | Time     | X rat | Z rat | Y rat | X beacon | Y beacon| time in beacon|
- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+ | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |----------- |
  
 beacons datetime.txt:
 
