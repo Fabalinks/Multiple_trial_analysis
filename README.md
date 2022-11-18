@@ -101,7 +101,7 @@ In this analysis we focus on proving the rearing behavior at the beacon.
 <!-- Data Description -->
 ## Data description
 
-During an experimental session 4 files are generated.
+During an experimental session 4 files are generated. Each is a text file and contains columns seperated by space. 
 
 position datetime.txt (rotation in quaternion coordinates):
 
