@@ -105,7 +105,7 @@ During an experimental session 4 files are generated. Each is a text file and co
 
 position datetime.txt (rotation in quaternion coordinates):
 
-| Time     | X rat | Z rat | Y rat | X rotation_rat | Y rotation_rat| Z rotation_rat | Motive Frame|Motive timestamp|Motive session timestamp|
+| Time     | X rat | Z rat | Y rat | X rotation_rat (pitch) | Y rotation_rat (yaw) | Z rotation_rat (roll)| Motive Frame|Motive timestamp|Motive session timestamp|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
 beacons_entry.txt (historical):
