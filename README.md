@@ -105,7 +105,10 @@ During an experimental session 4 files are generated. Each is a text file and co
 
 position datetime.txt (rotation in quaternion coordinates):
 
-| Time     | X rat | Z rat (height) | Y rat | X rotation_rat (roll) | Y rotation_rat (yaw) | Z rotation_rat (pitch)| Motive Frame|Motive timestamp|Motive session timestamp|
+The coordinates are established in the experimental room. When entering the room facing away from the door, X position would be to the right and left of the door (short wall of the arena). The rotation around this axis would be the pitch of the animal. The Z Position is then the second column taken as up and down in the room coordinates and the respective rotation around this is the yaw of the animal. With the last posiiton axis the Y rat position would be going futher into the room (long arena wall) that axis. Hence the rotation around this axis would be the roll of the animal.
+
+
+| Time     | X rat | Z rat (height) | Y rat |  rotation_around Y (roll) | rotation_around Z (yaw) | rotation_around X (pitch)| Motive Frame|Motive timestamp|Motive session timestamp|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
 beacons_entry.txt (historical):
