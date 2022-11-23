@@ -105,17 +105,17 @@ During an experimental session 4 files are generated. Each is a text file and co
 
 position datetime.txt (rotation in quaternion coordinates):
 
-| Time     | X rat | Z rat | Y rat | X rotation_rat (pitch) | Y rotation_rat (yaw) | Z rotation_rat (roll)| Motive Frame|Motive timestamp|Motive session timestamp|
+| Time     | X rat | Z rat (height) | Y rat | X rotation_rat (roll) | Y rotation_rat (yaw) | Z rotation_rat (pitch)| Motive Frame|Motive timestamp|Motive session timestamp|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
 beacons_entry.txt (historical):
 
- | Time     | X rat | Z rat | Y rat | X beacon | Y beacon| time in beacon|
+ | Time     | X rat | Z rat (height) | Y rat | X beacon | Y beacon| time in beacon|
  | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |----------- |
  
 beacons datetime.txt:
 
- | Time     | X rat | Z rat | Y rat | X beacon | Y beacon|
+ | Time     | X rat | Z rat (height) | Y rat | X beacon | Y beacon|
  | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
 metadata date - time.txt :  Example described
