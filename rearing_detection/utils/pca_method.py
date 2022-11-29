@@ -2,7 +2,7 @@ import numpy as np
 
 
 
-def generate_tau_sample(before_matrix, tau = 10, step = 2):
+def generate_tau_sample(before_matrix, tau = 10, step = 2, T = 200):
     '''
     generate a matrix of tau length sample by slicing the window along the whole time series
     features: [n,k,T]
