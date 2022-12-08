@@ -2,7 +2,8 @@ Rearing detection tried by Miao Wang
 
 
 Already finished:
-    baseline method: use height, z speed, xy plannar speed to determine the rearing. 
+
+    # 1 baseline method: use height, z speed, xy plannar speed to determine the rearing. 
         Advantages: 
             1. Extend the rearing period detected by set a height threshold.
             2. Easy
@@ -10,15 +11,36 @@ Already finished:
             1. Can not well detect the begin and end of rearing
             2. not solid statistical-based
         
-        Plan to do:
-            Use change point detection to determine the begin and end of rearing
+
         
     
-    PCA methods: use pca or svd to detect rearing
-        Finished part:
-            1. generate design matrix for pca, the reuslt seem to be ok, big explained ratio for the first pc.
-            2. get some relationship of different features(height, pitch, zspeed, xy speed) from first PC eigenvector
+    # 2. PCA methods: 
+        1. use pca or svd to detect rearing
+        2. Try to figure out what each PC is capturing by plot the joint distribution of reconstructed data
         
-        Need to do:
-            Apply this relationship to determine rearing.
+        Problem:
+            1. The begin of the rearing is not precise(as shown in resulst/PCA_method/FS10), depend on the value of tau
+    
 
+
+    # 3. ICA methods:
+        1. Use ICA to decompose the features and detect rearing
+
+        Problem:
+            1. I tried different methods to preprocess the data (global centering: subtract mean in each example, local centering: subtract mean in each dimension(the column)), the resutls showed that for global centering, the results could noe converge.
+
+    
+    # 4. Dynamic of different features before rearing:
+        See how features value evolue as time approach rearing time by ploting joint distribution along time window.
+
+Not finished yet:
+
+    # 1. Distinguish supported rearing and unsupported rearing:
+        Problem: what is the boarder on xy ?
+        From Fabian's code:
+            X_cut_min = -.6
+            Y_cut_max = 1.5
+            X_cut_max = .05
+            Y_cut_min = .08
+
+ 
