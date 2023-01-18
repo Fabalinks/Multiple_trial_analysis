@@ -1,0 +1,26 @@
+Recording started on : 2021-03-18 11:01:37  
+Computer time was : 1616061697.93  
+ITI_time : 1.5  
+time_in_cylinder : 2.5  
+movement_collection_time : 0.01  
+animal_ID : FS4  
+background_color : 000  
+circle : 0.075  
+position_change : 10  
+light_off : 2  
+Cylinder_color : grass.png  
+rotation : 80  
+Pellets : 52 
+Beacon : 132.076000452 
+Sham : 7.96100068092 
+Distance : 432.548922326 
+Speed : 32.35826418869335 
+recording lenght : 1884.91899991 
+high pellets : 48 
+high_time_in_cylinder : 0.5 
+invisible_time : 60 
+invisible_count : 4 
+invisible_list : [29, 31, 35, 39] 
+Animal jumped : 1 
+Recording_started_motive : 13571128.4141 
+Recording_timestamp_motive : 1885.04999998 
