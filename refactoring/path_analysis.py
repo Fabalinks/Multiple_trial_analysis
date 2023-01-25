@@ -78,7 +78,7 @@ def straightness_over_time(trial_trajectory, time_window=2):
         trial_trajectory = trajectory_[:end_ind]
     else:
         print('Time window exceeds the length of trajectory for this trial')
-        return None
+        # return None
 
 
     for i in range(len(trial_trajectory) - 2):
@@ -114,11 +114,11 @@ def bootstrap(trajectory,
                                         100]
         if straightness_type == 'sliding':
             sham_straightness = straightness_over_time(
-                sampled_trajectory, before_time=time_window)[0]
+                sampled_trajectory, time_window)[0]
 
         elif straightness_type == 'fixed':
             sham_straightness = straightness_moment_time(
-                sampled_trajectory, before_time=time_window)[0]
+                sampled_trajectory, time_window)[0]
 
         sham_straightness_list.append(sham_straightness)
     return sham_straightness_list
