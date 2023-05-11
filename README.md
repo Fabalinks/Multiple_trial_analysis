@@ -111,12 +111,12 @@ The coordinates are established in the experimental room. When entering the room
 | Time     | X rat | Z rat (height) | Y rat |  rotation_around Y (roll) | rotation_around Z (yaw) | rotation_around X (pitch)| Motive Frame|Motive timestamp|Motive session timestamp|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 
-beacons_entry.txt (historical):
+beacons_entry.txt (historical): Denotes each time the rat entered the beacon and keeps track of the animal untill it exits and records the amount of time the animal spent in the beacon.
 
  | Time     | X rat | Z rat (height) | Y rat | X beacon | Y beacon| time in beacon|
  | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |----------- |
  
-beacons datetime.txt:
+beacons datetime.txt: Record the trigger of the beacon by the rat.
 
  | Time     | X rat | Z rat (height) | Y rat | X beacon | Y beacon|
  | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
