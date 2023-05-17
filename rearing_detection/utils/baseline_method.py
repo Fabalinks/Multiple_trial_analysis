@@ -74,12 +74,13 @@ def continuous_detection(index_array, discontinu_tolerance = 2, total_tolerance 
         last_end = 0
         index_slice = []
         if np.count_nonzero(non_continue_bool) ==0: # true continuous
+            index_slice = [list(index_array)]
             return flag, index_slice
         
         else:
             for idx in non_continue_idx:
                 if np.abs(index_array[idx] - index_array[idx+1]) > discontinu_tolerance:
-                    index_slice.append(index_array[last_end:idx])
+                    index_slice.append(index_array[last_end:idx+1])
                     last_end = idx+1
                     flag = False
                 else:

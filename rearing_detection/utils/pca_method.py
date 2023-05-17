@@ -1,5 +1,17 @@
 import numpy as np
 
+def rearing_detection(z, height_thresh = 0.6):
+    '''
+    detect rearing by the height_thresh, if z[i]> = height_thresh, then the time of z[i] if rearing time
+    z: array of height in time series
+    height_thresh :threshold to determine the rearing
+    
+    return:
+    r: array of index of rearing time
+    '''
+    
+    return np.argwhere(z>= height_thresh).flatten()
+    
 
 def generate_tau_sample(before_matrix, tau = 10, step = 2, T = 200, k = 4):
     '''
@@ -16,7 +28,7 @@ def generate_tau_sample(before_matrix, tau = 10, step = 2, T = 200, k = 4):
     
     # use a time window to slip along T and get slice of tau, combine different features horizontally, 
 
-    num_slice = T//tau # if step = tau, no overlap
+    num_slice = (T-tau)//step +1  # if step = tau, no overlap
     num_events = before_matrix.shape[0]
     x_matrix = np.zeros((num_events * num_slice, tau * k))
 
