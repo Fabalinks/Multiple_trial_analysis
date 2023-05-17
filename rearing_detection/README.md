@@ -1,5 +1,14 @@
 Rearing detection tried by Miao Wang
 
+Recent update:
+1. labled data of where the flip happen: data/processed_data/FS11/distance, 2022-03-30.npy works well based on the plot of pitch vs height. The performance varies from session to session. Only update two files due to size limitation.
+
+Load the data by 
+all_data= np.load('2022-03-30.npy',allow_pickle=True).item()
+flip_label = all_data['flip_idx'] 
+markers = all_data['markers']
+
+2. demo_fix_jumps.ipynb shows how to generate processed data, but I did not upload the raw data due to size limitation.
 
 Already finished:
 
